@@ -1,6 +1,7 @@
 import { GeistSans } from "geist/font/sans";
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
+import { StoreWrapper } from "@/store/provider";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -27,7 +28,9 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <main className="min-h-screen flex flex-col items-center">
-            <div className="flex flex-col gap-20 max-w-5xl p-5">{children}</div>
+            <div className="flex flex-col gap-20 max-w-5xl p-5">
+              <StoreWrapper>{children}</StoreWrapper>
+            </div>
           </main>
         </ThemeProvider>
       </body>

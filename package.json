@@ -21,6 +21,8 @@
     "drizzle-orm": "^0.33.0",
     "geist": "^1.2.1",
     "lucide-react": "^0.436.0",
+    "mobx": "^6.13.1",
+    "mobx-react-lite": "^4.0.7",
     "next": "latest",
     "next-themes": "^0.3.0",
     "postgres": "^3.4.4",
