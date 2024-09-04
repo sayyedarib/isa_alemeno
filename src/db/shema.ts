@@ -1,15 +1,10 @@
-import { sql } from "drizzle-orm";
 import {
   pgTable,
   serial,
   timestamp,
   text,
   integer,
-  numeric,
   boolean,
-  date,
-  pgEnum,
-  uniqueIndex,
 } from "drizzle-orm/pg-core";
 
 // course table
@@ -21,7 +16,7 @@ export const CourseTable = pgTable("course", {
   name: text("name").notNull(),
   description: text("description").notNull(),
   thumbnail: text("thumbnail").notNull().default(""),
-  duration: integer("duration").notNull(),
+  duration: integer("duration").notNull(), // in weeks
   location: text("location").notNull().default("online"),
   prerequisites: text("prerequisites").array(),
   open: boolean("open").notNull().default(true),
@@ -70,6 +65,48 @@ export const ScheduleTable = pgTable("schedule", {
   friday: text("friday"),
   saturday: text("saturday"),
   sunday: text("sunday"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at")
+    .notNull()
+    .$onUpdate(() => new Date()),
+});
+
+export const StudentTable = pgTable("student", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  email: text("email"),
+  bio: text("bio"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at")
+    .notNull()
+    .$onUpdate(() => new Date()),
+});
+
+export const EnrollmentTable = pgTable("enrollment", {
+  id: serial("id").primaryKey(),
+  courseId: integer("course_id")
+    .notNull()
+    .references(() => CourseTable.id),
+  studentId: integer("student_id")
+    .notNull()
+    .references(() => StudentTable.id),
+  progress: integer("progress").notNull().default(0),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at")
+    .notNull()
+    .$onUpdate(() => new Date()),
+});
+
+export const FeedbackTable = pgTable("feedback", {
+  id: serial("id").primaryKey(),
+  courseId: integer("course_id")
+    .notNull()
+    .references(() => CourseTable.id),
+  studentId: integer("student_id")
+    .notNull()
+    .references(() => StudentTable.id),
+  like: boolean("like").notNull().default(false),
+  dislike: boolean("dislike").notNull().default(false),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at")
     .notNull()
