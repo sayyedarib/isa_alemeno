@@ -1,0 +1,77 @@
+import { sql } from "drizzle-orm";
+import {
+  pgTable,
+  serial,
+  timestamp,
+  text,
+  integer,
+  numeric,
+  boolean,
+  date,
+  pgEnum,
+  uniqueIndex,
+} from "drizzle-orm/pg-core";
+
+// course table
+export const CourseTable = pgTable("course", {
+  id: serial("id").primaryKey(),
+  instructorId: integer("instructor_id")
+    .notNull()
+    .references(() => InstructorTable.id),
+  name: text("name").notNull(),
+  description: text("description").notNull(),
+  thumbnail: text("thumbnail").notNull().default(""),
+  duration: integer("duration").notNull(),
+  location: text("location").notNull().default("online"),
+  prerequisites: text("prerequisites").array(),
+  open: boolean("open").notNull().default(true),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at")
+    .notNull()
+    .$onUpdate(() => new Date()),
+});
+
+export const InstructorTable = pgTable("instructor", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  email: text("email"),
+  experience: text("experience"),
+  bio: text("bio"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at")
+    .notNull()
+    .$onUpdate(() => new Date()),
+});
+
+// This table will store the syllabus for each course, week by week.
+export const SyllabusTable = pgTable("syllabus", {
+  id: serial("id").primaryKey(),
+  courseId: integer("course_id")
+    .notNull()
+    .references(() => CourseTable.id),
+  topic: text("topic").notNull(),
+  content: text("content"),
+  week: integer("duration").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at")
+    .notNull()
+    .$onUpdate(() => new Date()),
+});
+
+export const ScheduleTable = pgTable("schedule", {
+  id: serial("id").primaryKey(),
+  courseId: integer("course_id")
+    .notNull()
+    .references(() => CourseTable.id),
+  monday: text("monday"),
+  tuesday: text("tuesday"),
+  wednesday: text("wednesday"),
+  thursday: text("thursday"),
+  friday: text("friday"),
+  saturday: text("saturday"),
+  sunday: text("sunday"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at")
+    .notNull()
+    .$onUpdate(() => new Date()),
+});
