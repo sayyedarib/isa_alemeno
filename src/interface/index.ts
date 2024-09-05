@@ -9,13 +9,16 @@ export interface CourseCardProps {
 }
 
 // Define interfaces
-export interface Course {
+export interface CourseDetails {
   thumbnail: string;
   name: string;
   description: string;
   duration: number;
   location: string;
-  prerequisites?: string[];
+  prerequisites?: string[] | null;
+  instructor: Instructor | null;
+  schedule: Schedule | null;
+  syllabus: Syllabus[] | null;
 }
 
 export interface Instructor {
@@ -23,17 +26,17 @@ export interface Instructor {
 }
 
 export interface Schedule {
-  monday: string;
-  tuesday: string;
-  wednesday: string;
-  thursday: string;
-  friday: string;
-  saturday: string;
-  sunday: string;
+  monday: string | null;
+  tuesday: string | null;
+  wednesday: string | null;
+  thursday: string | null;
+  friday: string | null;
+  saturday: string | null;
+  sunday: string | null;
 }
 
 export interface Syllabus {
   week: number;
   topic: string;
-  content: string;
+  content: string | null;
 }
