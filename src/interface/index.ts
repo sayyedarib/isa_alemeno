@@ -1,4 +1,5 @@
 export interface CourseCardProps {
+  // TODO: id should always be a number, it should not be nullable
   id: number;
   name: string;
   description: string;
@@ -6,6 +7,7 @@ export interface CourseCardProps {
   duration: number;
   location: string;
   open: boolean;
+  instructorName: string | null;
 }
 
 // Define interfaces

@@ -3,7 +3,7 @@
 import { eq } from "drizzle-orm";
 
 import { db } from "./";
-import type { CourseDetails } from "@/interface";
+import type { CourseCardProps, CourseDetails } from "@/interface";
 
 import {
   CourseTable,
@@ -15,7 +15,7 @@ import {
   FeedbackTable,
 } from "./schema";
 
-export const readCourses = async () => {
+export const readCourses = async (): Promise<CourseCardProps[]> => {
   return await db
     .select({
       id: CourseTable.id,
@@ -25,8 +25,13 @@ export const readCourses = async () => {
       duration: CourseTable.duration,
       location: CourseTable.location,
       open: CourseTable.open,
+      instructorName: InstructorTable.name,
     })
-    .from(CourseTable);
+    .from(CourseTable)
+    .leftJoin(
+      InstructorTable,
+      eq(CourseTable.instructorId, InstructorTable.id),
+    );
 };
 
 export const readCourseDetails = async (
