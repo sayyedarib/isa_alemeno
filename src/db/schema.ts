@@ -46,7 +46,7 @@ export const SyllabusTable = pgTable("syllabus", {
     .references(() => CourseTable.id),
   topic: text("topic").notNull(),
   content: text("content"),
-  week: integer("duration").notNull(),
+  week: integer("week").notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at")
     .notNull()
