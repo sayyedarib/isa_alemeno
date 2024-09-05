@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+"use client";
 
-import type { Course, Instructor, Schedule, Syllabus } from "@/interface";
+import { useEffect, useState } from "react";
+import { observer } from "mobx-react-lite";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -18,79 +19,119 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { useStores } from "@/hooks/useStore";
 
-export default function CourseDetails({
-  params,
-}: {
-  params: { courseId: string };
-}) {
-  const [course, setCourse] = useState<Course | null>(null);
-  const [instructor, setInstructor] = useState<Instructor | null>(null);
-  const [schedule, setSchedule] = useState<Schedule | null>(null);
-  const [syllabus, setSyllabus] = useState<Syllabus[]>([]);
+const CourseDetails = observer(
+  ({ params }: { params: { courseId: string } }) => {
+    const { coursesStore } = useStores();
+    const [openAccordion, setOpenAccordion] = useState("syllabus");
 
-  if (!course || !instructor || !schedule) return null;
+    useEffect(() => {
+      coursesStore.getCourseById(Number(params.courseId));
+    }, [coursesStore, params.courseId]);
 
-  return (
-    <Card className="mx-auto max-w-4xl">
-      <CardHeader>
-        <Avatar>
-          <AvatarImage src={course.thumbnail} alt="@shadcn" />
-          <AvatarFallback>CN</AvatarFallback>
-        </Avatar>
-        <div>
-          <CardTitle>{course.name}</CardTitle>
-          <CardDescription>Instructor: {instructor.name}</CardDescription>
+    const course = coursesStore.courseDetail;
+
+    if (!course) {
+      return (
+        <div className="flex justify-center items-center h-screen">
+          Loading...
         </div>
-      </CardHeader>
-      <CardContent>
-        <p>{course.description}</p>
-        <Accordion type="single" collapsible>
-          <AccordionItem value="schedule">
-            <AccordionTrigger>Schedule</AccordionTrigger>
-            <AccordionContent>
-              <Tabs defaultValue="monday">
-                <TabsList>
-                  <TabsTrigger value="monday">Monday</TabsTrigger>
-                  <TabsTrigger value="tuesday">Tuesday</TabsTrigger>
-                  <TabsTrigger value="wednesday">Wednesday</TabsTrigger>
-                  <TabsTrigger value="thursday">Thursday</TabsTrigger>
-                  <TabsTrigger value="friday">Friday</TabsTrigger>
-                  <TabsTrigger value="saturday">Saturday</TabsTrigger>
-                  <TabsTrigger value="sunday">Sunday</TabsTrigger>
-                </TabsList>
-                <TabsContent value="monday">{schedule.monday}</TabsContent>
-                <TabsContent value="tuesday">{schedule.tuesday}</TabsContent>
-                <TabsContent value="wednesday">
-                  {schedule.wednesday}
-                </TabsContent>
-                <TabsContent value="thursday">{schedule.thursday}</TabsContent>
-                <TabsContent value="friday">{schedule.friday}</TabsContent>
-                <TabsContent value="saturday">{schedule.saturday}</TabsContent>
-                <TabsContent value="sunday">{schedule.sunday}</TabsContent>
-              </Tabs>
-            </AccordionContent>
-          </AccordionItem>
-          <AccordionItem value="syllabus">
-            <AccordionTrigger>Syllabus</AccordionTrigger>
-            <AccordionContent>
-              {syllabus.map((week) => (
-                <div key={week.week}>
-                  <h3>
-                    Week {week.week}: {week.topic}
-                  </h3>
-                  <p>{week.content}</p>
-                </div>
+      );
+    }
+
+    return (
+      <Card className="mx-auto max-w-4xl w-full shadow-lg rounded-lg overflow-hidden">
+        <CardHeader className="flex items-center space-x-4 p-6">
+          <Avatar className="w-16 h-16">
+            <AvatarImage src={course.thumbnail} alt={course.name} />
+            <AvatarFallback>{course.name.substring(0, 2)}</AvatarFallback>
+          </Avatar>
+          <div>
+            <CardTitle className="text-2xl font-semibold">
+              {course.name}
+            </CardTitle>
+            <CardDescription className="text-gray-600">
+              Instructor: {course.instructor?.name ?? "Not assigned"}
+            </CardDescription>
+          </div>
+        </CardHeader>
+        <CardContent className="p-6">
+          <p className="text-gray-700 mb-4">{course.description}</p>
+          <Accordion
+            type="single"
+            collapsible
+            value={openAccordion}
+            onValueChange={(value) => setOpenAccordion(value)}
+          >
+            {course.syllabus && course.syllabus.length > 0 && (
+              <AccordionItem value="syllabus">
+                <AccordionTrigger className="text-lg font-medium">
+                  Syllabus
+                </AccordionTrigger>
+                <AccordionContent className="mt-2">
+                  {course.syllabus.map((week) => (
+                    <div key={week.week} className="mb-4">
+                      <h3 className="text-xl font-semibold">
+                        Week {week.week}: {week.topic}
+                      </h3>
+                      <p className="text-gray-700">{week.content}</p>
+                    </div>
+                  ))}
+                </AccordionContent>
+              </AccordionItem>
+            )}
+            {course.schedule && (
+              <AccordionItem value="schedule">
+                <AccordionTrigger className="text-lg font-medium">
+                  Schedule
+                </AccordionTrigger>
+                <AccordionContent className="mt-2">
+                  <Tabs defaultValue="monday">
+                    <TabsList className="flex space-x-2">
+                      {Object.keys(course.schedule).map((day) => (
+                        <TabsTrigger
+                          key={day}
+                          value={day}
+                          className="px-4 py-2 rounded-md hover:bg-black/50"
+                        >
+                          {day.charAt(0).toUpperCase() + day.slice(1)}
+                        </TabsTrigger>
+                      ))}
+                    </TabsList>
+                    {Object.entries(course.schedule).map(([day, schedule]) => (
+                      <TabsContent key={day} value={day} className="mt-4">
+                        {schedule ?? "No schedule for this day"}
+                      </TabsContent>
+                    ))}
+                  </Tabs>
+                </AccordionContent>
+              </AccordionItem>
+            )}
+          </Accordion>
+        </CardContent>
+        <CardFooter className="p-6 flex flex-col space-y-2">
+          <div className="flex items-center space-x-2">
+            <span className="font-medium text-gray-700">Location:</span>
+            <Badge className="bg-blue-100 text-blue-800">
+              {course.location}
+            </Badge>
+          </div>
+          {course.prerequisites && (
+            <div className="flex items-center space-x-2">
+              <span className="font-medium text-gray-700">Prerequisites:</span>
+              {course.prerequisites.map((prerequisite, index) => (
+                <Badge key={index} className="bg-green-100 text-green-800">
+                  {prerequisite}
+                </Badge>
               ))}
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
-      </CardContent>
-      <CardFooter>
-        <div>Duration: {course.duration} weeks</div>
-        <div>Location: {course.location}</div>
-        <div>Prerequisites: {course.prerequisites?.join(", ")}</div>
-      </CardFooter>
-    </Card>
-  );
-}
+            </div>
+          )}
+        </CardFooter>
+      </Card>
+    );
+  },
+);
+
+export default CourseDetails;
