@@ -10,6 +10,15 @@ export interface CourseCardProps {
   instructorName: string | null;
 }
 
+export interface DashboardCourseCardProps {
+  id: number;
+  name: string;
+  description: string;
+  thumbnail: string;
+  duration: number;
+  progress: number;
+}
+
 // Define interfaces
 export interface CourseDetails {
   thumbnail: string;
@@ -41,4 +50,11 @@ export interface Syllabus {
   week: number;
   topic: string;
   content: string | null;
+}
+
+export interface Student {
+  id: number;
+  name: string;
+  email: string | null; //TODO: email should not be nullable
+  courses: ({ courseId: number; progress: number | null } | null)[];
 }

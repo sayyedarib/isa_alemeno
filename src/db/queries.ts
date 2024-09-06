@@ -1,9 +1,10 @@
 "use server";
 
-import { eq } from "drizzle-orm";
+import { eq, like } from "drizzle-orm";
 
 import { db } from "./";
 import type { CourseCardProps, CourseDetails } from "@/interface";
+import { createClient } from "@/utils/supabase/server";
 
 import {
   CourseTable,
@@ -106,4 +107,108 @@ export const readCourseDetails = async (
   };
 
   return courseDetails;
+};
+
+export const readCourseFeedback = async (courseId: number) => {
+  const feedback = await db
+    .select({
+      like: FeedbackTable.like,
+      dislike: FeedbackTable.dislike,
+      studentId: FeedbackTable.studentId,
+      courseId: FeedbackTable.courseId,
+    })
+    .from(FeedbackTable)
+    .where(eq(FeedbackTable.courseId, courseId));
+
+  return feedback;
+};
+
+export const readStudentId = async (email: string | undefined) => {
+  if (!email) {
+    // TODO: Add logging and error handling
+    return null;
+  }
+
+  const studentId = await db
+    .select({
+      id: StudentTable.id,
+    })
+    .from(StudentTable)
+    .where(like(StudentTable.email, email));
+
+  return studentId[0].id;
+};
+
+export const readStudent = async () => {
+  const supabase = createClient();
+  const { data, error } = await supabase.auth.getUser();
+
+  if (error) {
+    return null;
+  }
+
+  if (!data.user) {
+    // TODO: Add logging and error handling
+    return null;
+  }
+
+  const studentId = await readStudentId(data?.user?.email);
+
+  if (!studentId) {
+    // TODO: Add logging and error handling
+    return null;
+  }
+
+  const studentData = await db
+    .select({
+      id: StudentTable.id,
+      name: StudentTable.name,
+      email: StudentTable.email,
+      courseId: CourseTable.id,
+      progress: EnrollmentTable.progress,
+    })
+    .from(StudentTable)
+    .leftJoin(EnrollmentTable, eq(StudentTable.id, EnrollmentTable.studentId))
+    .innerJoin(CourseTable, eq(EnrollmentTable.courseId, CourseTable.id))
+    .where(eq(StudentTable.id, studentId));
+
+  if (studentData.length === 0) {
+    return null;
+  }
+
+  const { id, name, email } = studentData[0];
+  const courses = studentData.map((row) => ({
+    courseId: row.courseId,
+    progress: row.progress,
+  }));
+
+  return {
+    id,
+    name,
+    email,
+    courses,
+  };
+};
+
+export const enrollInCourse = async (courseId: number) => {
+  const supabase = createClient();
+  const { data } = await supabase.auth.getUser();
+
+  if (!data.user) {
+    // TODO: Add logging and error handling
+    return null;
+  }
+
+  const studentId = await readStudentId(data?.user?.email);
+
+  if (!studentId) {
+    // TODO: Add logging and error handling
+    return null;
+  }
+
+  // TODO: Add validation to check if the student is already enrolled in the course
+  await db.insert(EnrollmentTable).values({
+    courseId,
+    studentId,
+  });
 };
