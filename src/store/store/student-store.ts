@@ -29,6 +29,7 @@ export class StudentStore {
         course.completed = true;
         course.progress = 100;
         await markCourseAsCompleted(courseId);
+        await updateCourseProgress(courseId, 100);
       }
     }
   };

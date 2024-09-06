@@ -3,7 +3,9 @@
 import React, { useState, useEffect } from "react";
 import { observer } from "mobx-react-lite";
 import { EllipsisVertical, SearchIcon } from "lucide-react";
+import Link from "next/link";
 
+import { Button } from "@/components/ui/button";
 import { enrollInCourse } from "@/db/queries";
 import { Input } from "@/components/ui/input";
 import {
@@ -52,6 +54,15 @@ const SearchHero = observer(() => {
 
   return (
     <div className="flex flex-col gap-16 items-center p-5">
+      {studentStore.student ? (
+        <Button className="absolute top-6 right-4">
+          <Link href="/student-dashboard">Dashboard</Link>
+        </Button>
+      ) : (
+        <Button className="absolute top-6 right-4">
+          <Link href="/sign-in">Login</Link>
+        </Button>
+      )}
       <div className="flex items-center w-full max-w-2xl space-x-2 rounded-lg border px-3.5 py-2">
         <SearchIcon />
         <Input

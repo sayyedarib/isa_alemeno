@@ -2,8 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
+import Link from "next/link";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -43,6 +45,9 @@ const CourseDetails = observer(
 
     return (
       <Card className="mx-auto max-w-4xl w-full shadow-lg rounded-lg overflow-hidden m-5">
+        <Button className="absolute top-2 left-2">
+          <Link href="/">Home</Link>
+        </Button>
         <CardHeader className="flex items-center space-x-4 p-6">
           <Avatar className="w-16 h-16">
             <AvatarImage src={course.thumbnail} alt={course.name} />
