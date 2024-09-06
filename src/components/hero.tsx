@@ -56,58 +56,65 @@ const SearchHero = observer(() => {
   };
 
   return (
-    <div className="flex flex-col gap-16 items-center p-5">
-      {studentStore.student ? (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Avatar className="absolute top-6 right-4 cursor-pointer">
-              <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-              <AvatarFallback>CN</AvatarFallback>
-            </Avatar>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem asChild>
-              <Link href="/student-dashboard">Dashboard</Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => signOutAction}>Logout</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      ) : (
-        <Button className="absolute top-6 right-4">
-          <Link href="/sign-in">Login</Link>
-        </Button>
-      )}
-      <div className="flex items-center w-full max-w-2xl space-x-2 rounded-lg border px-3.5 py-2">
-        <SearchIcon />
-        <Input
-          type="search"
-          placeholder={`Search by ${searchBy === "course_name" ? "course" : "instructor"} name`}
-          className="w-full border-0 h-8 font-semibold"
-          value={searchTerm}
-          onChange={handleSearchChange}
-        />
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <EllipsisVertical className="cursor-pointer" />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56">
-            <DropdownMenuLabel>Search by</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuRadioGroup
-              value={searchBy}
-              onValueChange={setSearchBy}
-            >
-              <DropdownMenuRadioItem value="course_name">
-                Course Name
-              </DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="instructor_name">
-                Instructor Name
-              </DropdownMenuRadioItem>
-            </DropdownMenuRadioGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
+    <div className="flex flex-col gap-16 items-center justify-center p-5">
+      <div className="flex w-full gap-3 items-center">
+        <div className="flex items-center w-full max-w-2xl space-x-2 rounded-lg border px-3.5 py-2">
+          <SearchIcon />
+          <Input
+            type="search"
+            placeholder={`Search by ${searchBy === "course_name" ? "course" : "instructor"} name`}
+            className="w-full border-0 h-8 font-semibold"
+            value={searchTerm}
+            onChange={handleSearchChange}
+          />
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <EllipsisVertical className="cursor-pointer" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-20 md:w-56">
+              <DropdownMenuLabel>Search by</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuRadioGroup
+                value={searchBy}
+                onValueChange={setSearchBy}
+              >
+                <DropdownMenuRadioItem value="course_name">
+                  Course Name
+                </DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value="instructor_name">
+                  Instructor Name
+                </DropdownMenuRadioItem>
+              </DropdownMenuRadioGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+        {studentStore.student ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Avatar className="cursor-pointer">
+                <AvatarImage
+                  src="https://github.com/shadcn.png"
+                  alt="@shadcn"
+                />
+                <AvatarFallback>CN</AvatarFallback>
+              </Avatar>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem asChild>
+                <Link href="/student-dashboard">Dashboard</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => signOutAction}>
+                Logout
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : (
+          <Button>
+            <Link href="/sign-in">Login</Link>
+          </Button>
+        )}
       </div>
-      <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="flex flex-wrap gap-4 items-center justify-center">
         {filteredCourses.map((course) => (
           <ThreeDCourseCard
             key={course.id}
@@ -121,7 +128,7 @@ const SearchHero = observer(() => {
             instructorName={course.instructorName}
             enrolled={studentStore.student?.courses.some(
               (enrolledCourse) =>
-                enrolledCourse && enrolledCourse.courseId === course.id
+                enrolledCourse && enrolledCourse.courseId === course.id,
             )}
             handleEnroll={handleEnroll}
           />

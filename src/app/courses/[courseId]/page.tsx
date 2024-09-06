@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
+import { MoveLeft } from "lucide-react";
 import Link from "next/link";
 
 import { Feedback } from "@/interface";
@@ -65,10 +66,12 @@ const CourseDetails = observer(
     }
 
     return (
-      <Card className="mx-auto max-w-4xl w-full shadow-lg rounded-lg overflow-hidden m-5">
-        <Button className="absolute top-2 left-2">
-          <Link href="/">Home</Link>
-        </Button>
+      <Card className="mx-auto max-w-4xl w-full shadow-lg rounded-lg overflow-hidden m-5 relative">
+        <div className="absolute top-2 left-2 flex gap-2 items-center cursor-pointer">
+          <Link href="/">
+            <MoveLeft />
+          </Link>
+        </div>
         <CardHeader className="flex items-center space-x-4 p-6">
           <Avatar className="w-16 h-16">
             <AvatarImage src={course.thumbnail} alt={course.name} />
