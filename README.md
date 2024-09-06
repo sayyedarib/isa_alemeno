@@ -38,3 +38,8 @@ You can view a fully working demo [here](https://isa-alemeno.vercel.app/).
    ```
 
    It should now be running on [localhost:3000](http://localhost:3000/).
+
+## Future Works
+- Add loaders and skeleton in fallback and during data fetching for better UX
+- Add loogers for convinient debugging
+- Implement robust error handling
