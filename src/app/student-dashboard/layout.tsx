@@ -73,9 +73,7 @@ export default function StudentDashboardLayout({
           </div>
         </div>
       </div>
-      <div className="flex flex-col">
-        {children}
-      </div>
+      <div className="flex flex-col">{children}</div>
     </div>
   );
 }

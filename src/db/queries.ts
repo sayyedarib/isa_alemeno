@@ -1,6 +1,6 @@
 "use server";
 
-import { eq, like } from "drizzle-orm";
+import { and, eq, like } from "drizzle-orm";
 
 import { db } from "./";
 import type { CourseCardProps, CourseDetails } from "@/interface";
@@ -166,6 +166,7 @@ export const readStudent = async () => {
       email: StudentTable.email,
       courseId: CourseTable.id,
       progress: EnrollmentTable.progress,
+      completed: EnrollmentTable.completed,
     })
     .from(StudentTable)
     .leftJoin(EnrollmentTable, eq(StudentTable.id, EnrollmentTable.studentId))
@@ -179,7 +180,8 @@ export const readStudent = async () => {
   const { id, name, email } = studentData[0];
   const courses = studentData.map((row) => ({
     courseId: row.courseId,
-    progress: row.progress,
+    progress: row.progress ?? 0,
+    completed: row.completed ?? false,
   }));
 
   return {
@@ -211,4 +213,65 @@ export const enrollInCourse = async (courseId: number) => {
     courseId,
     studentId,
   });
+};
+
+export const markCourseAsCompleted = async (courseId: number) => {
+  const supabase = createClient();
+  const { data } = await supabase.auth.getUser();
+
+  if (!data.user) {
+    // TODO: Add logging and error handling
+    return null;
+  }
+
+  const studentId = await readStudentId(data?.user?.email);
+
+  if (!studentId) {
+    // TODO: Add logging and error handling
+    return null;
+  }
+
+  await db
+    .update(EnrollmentTable)
+    .set({
+      completed: true,
+    })
+    .where(
+      and(
+        eq(EnrollmentTable.courseId, courseId),
+        eq(EnrollmentTable.studentId, studentId),
+      ),
+    );
+};
+
+export const updateCourseProgress = async (
+  courseId: number,
+  progress: number,
+) => {
+  const supabase = createClient();
+  const { data } = await supabase.auth.getUser();
+
+  if (!data.user) {
+    // TODO: Add logging and error handling
+    return null;
+  }
+
+  const studentId = await readStudentId(data?.user?.email);
+
+  if (!studentId) {
+    // TODO: Add logging and error handling
+    return null;
+  }
+
+  await db
+    .update(EnrollmentTable)
+    .set({
+      progress,
+    })
+    .where(
+      and(
+        eq(EnrollmentTable.courseId, courseId),
+        eq(EnrollmentTable.studentId, studentId),
+      ),
+    );
 };

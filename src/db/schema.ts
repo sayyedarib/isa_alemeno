@@ -91,6 +91,7 @@ export const EnrollmentTable = pgTable("enrollment", {
     .notNull()
     .references(() => StudentTable.id),
   progress: integer("progress").notNull().default(0),
+  completed: boolean("completed").notNull().default(false),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at")
     .notNull()

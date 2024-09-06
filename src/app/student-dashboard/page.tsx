@@ -1,12 +1,13 @@
 "use client";
 import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { observer } from "mobx-react-lite";
 
 import { Button } from "@/components/ui/button";
 import { DashboardThreeDCourseCard } from "@/components/dashboard-course-card";
 import { useStores } from "@/hooks/useStore";
 
-export default function EnrolledCoursesPage() {
+const EnrolledCoursesPage = observer(() => {
   const router = useRouter();
 
   const { coursesStore, studentStore } = useStores();
@@ -53,6 +54,13 @@ export default function EnrolledCoursesPage() {
                     thumbnail={course.thumbnail}
                     duration={course.duration}
                     progress={enrolledCourse?.progress || 1}
+                    completed={enrolledCourse?.completed || false}
+                    markAsCompleted={async (id: number) => {
+                      await studentStore.markCompleted(id);
+                    }}
+                    updateProgress={async (id: number, progress: number) => {
+                      await studentStore.updateProgress(id, progress);
+                    }}
                   />
                 );
               }
@@ -62,4 +70,6 @@ export default function EnrolledCoursesPage() {
       </div>
     </main>
   );
-}
+});
+
+export default EnrolledCoursesPage;

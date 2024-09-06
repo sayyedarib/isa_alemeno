@@ -7,9 +7,15 @@ import type { CourseCardProps, DashboardCourseCardProps } from "@/interface";
 
 import { CardBody, CardContainer, CardItem } from "@/components/ui/3d-card";
 import { Progress } from "@/components/ui/progress";
+import { Button } from "@/components/ui/button"; // Import the Button component from ShadCN
+
+interface ExtendDashboardCourseCardProps extends DashboardCourseCardProps {
+  markAsCompleted: (id: number) => void;
+  updateProgress: (id: number, progress: number) => void;
+}
 
 export function DashboardThreeDCourseCard(
-  courseCardProps: DashboardCourseCardProps,
+  courseCardProps: ExtendDashboardCourseCardProps,
 ) {
   return (
     <CardContainer className="inter-var">
@@ -41,6 +47,20 @@ export function DashboardThreeDCourseCard(
             value={courseCardProps.progress}
             max={courseCardProps.duration}
           />
+        </CardItem>
+        <CardItem translateZ="120" className="w-full mt-4">
+          {courseCardProps.completed ? (
+            <div className="text-green-500 font-bold">Course Completed</div>
+          ) : (
+            <Button
+              onClick={() =>
+                courseCardProps.markAsCompleted(courseCardProps.id)
+              }
+              className="bg-emerald-500 text-white hover:bg-emerald-600"
+            >
+              Mark as Completed
+            </Button>
+          )}
         </CardItem>
       </CardBody>
     </CardContainer>

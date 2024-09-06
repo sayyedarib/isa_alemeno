@@ -17,6 +17,7 @@ export interface DashboardCourseCardProps {
   thumbnail: string;
   duration: number;
   progress: number;
+  completed: boolean;
 }
 
 // Define interfaces
@@ -56,5 +57,9 @@ export interface Student {
   id: number;
   name: string;
   email: string | null; //TODO: email should not be nullable
-  courses: ({ courseId: number; progress: number | null } | null)[];
+  courses: ({
+    courseId: number;
+    progress: number | null;
+    completed: boolean;
+  } | null)[];
 }
