@@ -54,8 +54,8 @@ export default function Login({ searchParams }: { searchParams: Message }) {
           <Button
             onClick={() => {
               const formData = new FormData();
-              formData.append("email", "dummy@example.com");
-              formData.append("password", "password");
+              formData.append("email", "sayyedaribhussain4321@gmail.com");
+              formData.append("password", "@Unknown@321");
               signInAction(formData);
             }}
           >
