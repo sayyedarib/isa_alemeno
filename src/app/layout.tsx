@@ -28,7 +28,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <main className="min-h-screen min-w-screen flex flex-col items-center">
-              <StoreWrapper>{children}</StoreWrapper>
+            <StoreWrapper>{children}</StoreWrapper>
           </main>
         </ThemeProvider>
       </body>
