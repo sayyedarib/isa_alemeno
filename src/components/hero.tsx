@@ -5,6 +5,7 @@ import { observer } from "mobx-react-lite";
 import { EllipsisVertical, SearchIcon } from "lucide-react";
 import Link from "next/link";
 
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { enrollInCourse } from "@/db/queries";
 import { Input } from "@/components/ui/input";
@@ -12,12 +13,14 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuLabel,
+  DropdownMenuItem,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ThreeDCourseCard } from "@/components/course-card";
+import { signOutAction } from "@/app/actions";
 import { useStores } from "@/hooks/useStore";
 
 const SearchHero = observer(() => {
@@ -55,9 +58,20 @@ const SearchHero = observer(() => {
   return (
     <div className="flex flex-col gap-16 items-center p-5">
       {studentStore.student ? (
-        <Button className="absolute top-6 right-4">
-          <Link href="/student-dashboard">Dashboard</Link>
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Avatar className="absolute top-6 right-4 cursor-pointer">
+              <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+              <AvatarFallback>CN</AvatarFallback>
+            </Avatar>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem asChild>
+              <Link href="/student-dashboard">Dashboard</Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => signOutAction}>Logout</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       ) : (
         <Button className="absolute top-6 right-4">
           <Link href="/sign-in">Login</Link>
@@ -107,7 +121,7 @@ const SearchHero = observer(() => {
             instructorName={course.instructorName}
             enrolled={studentStore.student?.courses.some(
               (enrolledCourse) =>
-                enrolledCourse && enrolledCourse.courseId === course.id,
+                enrolledCourse && enrolledCourse.courseId === course.id
             )}
             handleEnroll={handleEnroll}
           />
