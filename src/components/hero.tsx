@@ -31,7 +31,7 @@ const SearchHero = observer(() => {
   useEffect(() => {
     coursesStore.fetch();
     studentStore.fetch();
-  }, [coursesStore]);
+  }, [coursesStore, studentStore]);
 
   const filteredCourses = coursesStore.courses.filter((course) => {
     if (searchBy === "course_name") {
@@ -128,7 +128,7 @@ const SearchHero = observer(() => {
             instructorName={course.instructorName}
             enrolled={studentStore.student?.courses.some(
               (enrolledCourse) =>
-                enrolledCourse && enrolledCourse.courseId === course.id,
+                enrolledCourse && enrolledCourse.courseId === course.id
             )}
             handleEnroll={handleEnroll}
           />

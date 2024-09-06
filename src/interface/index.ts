@@ -56,12 +56,12 @@ export interface Syllabus {
 export interface Student {
   id: number;
   name: string;
-  email: string | null; //TODO: email should not be nullable
-  courses: ({
-    courseId: number;
+  email: string | null; // email should not be nullable
+  courses: {
+    courseId: number | null; // courseId should always be a number
     progress: number | null;
     completed: boolean;
-  } | null)[];
+  }[];
 }
 
 export interface Feedback {

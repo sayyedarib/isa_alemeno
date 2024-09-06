@@ -126,14 +126,17 @@ export const readStudentId = async (email: string | undefined) => {
 };
 
 export const readStudent = async () => {
+  console.log("info: query received to read student data");
   const supabase = createClient();
   const { data, error } = await supabase.auth.getUser();
 
   if (error) {
+    console.log("Error in getting user auth info: ", error.message);
     return null;
   }
 
   if (!data.user) {
+    console.log("No user found in auth info");
     // TODO: Add logging and error handling
     return null;
   }
@@ -141,6 +144,7 @@ export const readStudent = async () => {
   const studentId = await readStudentId(data?.user?.email);
 
   if (!studentId) {
+    console.log("No student found with email: ", data?.user?.email);
     // TODO: Add logging and error handling
     return null;
   }
@@ -156,10 +160,11 @@ export const readStudent = async () => {
     })
     .from(StudentTable)
     .leftJoin(EnrollmentTable, eq(StudentTable.id, EnrollmentTable.studentId))
-    .innerJoin(CourseTable, eq(EnrollmentTable.courseId, CourseTable.id))
+    .leftJoin(CourseTable, eq(EnrollmentTable.courseId, CourseTable.id))
     .where(eq(StudentTable.id, studentId));
 
   if (studentData.length === 0) {
+    console.log("No student data found with id: ", studentId);
     return null;
   }
 
