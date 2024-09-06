@@ -63,3 +63,14 @@ export interface Student {
     completed: boolean;
   } | null)[];
 }
+
+export interface Feedback {
+  likes: number;
+  dislikes: number;
+  feedback: {
+    like: boolean;
+    dislike: boolean;
+    studentId: number;
+    courseId: number;
+  }[];
+}

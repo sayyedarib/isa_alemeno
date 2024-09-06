@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
 import Link from "next/link";
 
+import { Feedback } from "@/interface";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,15 +25,34 @@ import {
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { useStores } from "@/hooks/useStore";
+import { readCourseFeedback } from "@/db/queries";
+import LikeDislike from "@/components/like-dislike";
 
 const CourseDetails = observer(
   ({ params }: { params: { courseId: string } }) => {
-    const { coursesStore } = useStores();
+    const { coursesStore, studentStore } = useStores();
     const [openAccordion, setOpenAccordion] = useState("syllabus");
+    const [feedback, setFeedback] = useState<Feedback>({
+      likes: 0,
+      dislikes: 0,
+      feedback: [],
+    });
 
     useEffect(() => {
       coursesStore.getCourseById(Number(params.courseId));
+      fetchFeedback();
     }, [coursesStore, params.courseId]);
+
+    const fetchFeedback = async () => {
+      const fetchedFeedback = await readCourseFeedback(Number(params.courseId));
+      setFeedback(fetchedFeedback);
+    };
+
+    const isEnrolled = studentStore.student?.courses.some(
+      (enrolledCourse) =>
+        enrolledCourse &&
+        Number(enrolledCourse.courseId) === Number(params.courseId),
+    );
 
     const course = coursesStore.courseDetail;
 
@@ -64,6 +85,15 @@ const CourseDetails = observer(
         </CardHeader>
         <CardContent className="p-6">
           <p className="text-gray-700 mb-4">{course.description}</p>
+          {isEnrolled && (
+            <LikeDislike
+              courseId={Number(params.courseId)}
+              studentId={studentStore.student?.id}
+              initialLikes={feedback.likes}
+              initialDislikes={feedback.dislikes}
+              initialFeedback={feedback.feedback}
+            />
+          )}
           <Accordion
             type="single"
             collapsible

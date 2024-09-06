@@ -109,20 +109,6 @@ export const readCourseDetails = async (
   return courseDetails;
 };
 
-export const readCourseFeedback = async (courseId: number) => {
-  const feedback = await db
-    .select({
-      like: FeedbackTable.like,
-      dislike: FeedbackTable.dislike,
-      studentId: FeedbackTable.studentId,
-      courseId: FeedbackTable.courseId,
-    })
-    .from(FeedbackTable)
-    .where(eq(FeedbackTable.courseId, courseId));
-
-  return feedback;
-};
-
 export const readStudentId = async (email: string | undefined) => {
   if (!email) {
     // TODO: Add logging and error handling
@@ -274,4 +260,57 @@ export const updateCourseProgress = async (
         eq(EnrollmentTable.studentId, studentId),
       ),
     );
+};
+
+export const readCourseFeedback = async (courseId: number) => {
+  const feedback = await db
+    .select({
+      like: FeedbackTable.like,
+      dislike: FeedbackTable.dislike,
+      studentId: FeedbackTable.studentId,
+      courseId: FeedbackTable.courseId,
+    })
+    .from(FeedbackTable)
+    .where(eq(FeedbackTable.courseId, courseId));
+
+  const likes = feedback.filter((f) => f.like).length;
+  const dislikes = feedback.filter((f) => f.dislike).length;
+
+  return { likes, dislikes, feedback };
+};
+
+export const updateCourseFeedback = async (
+  courseId: number,
+  studentId: number,
+  like: boolean,
+  dislike: boolean,
+) => {
+  const existingFeedback = await db
+    .select()
+    .from(FeedbackTable)
+    .where(
+      and(
+        eq(FeedbackTable.courseId, courseId),
+        eq(FeedbackTable.studentId, studentId),
+      ),
+    )
+    .limit(1);
+
+  if (existingFeedback.length > 0) {
+    await db
+      .update(FeedbackTable)
+      .set({ like, dislike })
+      .where(
+        and(
+          eq(FeedbackTable.courseId, courseId),
+          eq(FeedbackTable.studentId, studentId),
+        ),
+      );
+  } else {
+    await db
+      .insert(FeedbackTable)
+      .values({ courseId, studentId, like, dislike });
+  }
+
+  return await readCourseFeedback(courseId);
 };
