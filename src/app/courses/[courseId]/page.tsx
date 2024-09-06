@@ -42,7 +42,7 @@ const CourseDetails = observer(
     }
 
     return (
-      <Card className="mx-auto max-w-4xl w-full shadow-lg rounded-lg overflow-hidden">
+      <Card className="mx-auto max-w-4xl w-full shadow-lg rounded-lg overflow-hidden m-5">
         <CardHeader className="flex items-center space-x-4 p-6">
           <Avatar className="w-16 h-16">
             <AvatarImage src={course.thumbnail} alt={course.name} />
